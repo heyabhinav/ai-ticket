@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+SQLAlchemy
+pydantic
+alembic     # optional
+python-dotenv
+sqlite3      # builtin
+sqlalchemy
+
+# For later when integrating Azure
+# azure-ai-textanalytics  (placeholder, don't install now)
