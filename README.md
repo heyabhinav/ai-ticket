@@ -43,4 +43,10 @@ Other files:
    ```
 4. Open Swagger: http://127.0.0.1:8000/docs
 
+Optional-----
+1. To Alter Table
+
+sqlite3 .\app\tickets.db
+ALTER TABLE tickets ADD COLUMN email VARCHAR(256) NOT NULL DEFAULT '';
+
 """

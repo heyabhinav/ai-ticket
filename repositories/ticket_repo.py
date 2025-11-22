@@ -6,7 +6,11 @@ class TicketRepository:
         self.db = db
 
     def create(self, ticket: schemas.TicketCreate) -> models.Ticket:
-        db_obj = models.Ticket(title=ticket.title, description=ticket.description)
+        db_obj = models.Ticket(
+            title=ticket.title,
+            description=ticket.description,
+            email=ticket.email,
+        )
         self.db.add(db_obj)
         self.db.commit()
         self.db.refresh(db_obj)
@@ -27,3 +31,36 @@ class TicketRepository:
         self.db.commit()
         self.db.refresh(obj)
         return obj
+
+    def find_by_status(self, email: str, status: str):
+        return (
+            self.db.query(models.Ticket)
+            .filter(
+                models.Ticket.email == email,
+                models.Ticket.status == status,
+            )
+            .order_by(models.Ticket.created_at.desc())
+            .all()
+        )
+
+    def find_by_category(self, email: str, category: str):
+        return (
+            self.db.query(models.Ticket)
+            .filter(
+                models.Ticket.email == email,
+                models.Ticket.category == category,
+            )
+            .order_by(models.Ticket.created_at.desc())
+            .all()
+        )
+
+    def find_by_priority(self, email: str, priority: str):
+        return (
+            self.db.query(models.Ticket)
+            .filter(
+                models.Ticket.email == email,
+                models.Ticket.priority == priority,
+            )
+            .order_by(models.Ticket.created_at.desc())
+            .all()
+        )

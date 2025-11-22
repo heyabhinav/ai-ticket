@@ -7,11 +7,14 @@ class Ticket(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(256), nullable=False)
     description = Column(Text, nullable=False)
-    status = Column(String(50), default="ingested")
+    email = Column(String(256), nullable=False)
+    status = Column(String(50), default="new")
     category = Column(String(100), nullable=True)
     priority = Column(String(50), nullable=True)
     suggestion = Column(Text, nullable=True)
     confidence = Column(Float, nullable=True)
+    close_reason = Column(Text, nullable=True)
+    closed_at = Column(DateTime(timezone=True))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 class KnowledgeBase(Base):

@@ -1,40 +1,215 @@
-"""
-Run this module to populate DB with sample tickets and KB rows.
-Usage:
-    python -m app.seed_data
-"""
-from app.db import SessionLocal, engine
+# app/seed_data.py
+
+from datetime import datetime, timedelta
+from app.db import SessionLocal
 from app import models
 
-models.Base.metadata.create_all(bind=engine)
-
-SAMPLE_TICKETS = [
-    {"title": "DB connection timeout", "description": "Orders service cannot connect to Postgres at 10.0.0.12"},
-    {"title": "Users cannot login", "description": "Multiple users report login failure, SSO error"},
-    {"title": "Internet outage in office", "description": "All users in site report no network access"}
-]
-
-SAMPLE_KB = [
-    {"category": "Database", "problem": "DB timeout", "fix": "Restart DB, check connection string and firewall"},
-    {"category": "Access", "problem": "Login issues", "fix": "Reset password, check SSO provider"},
-    {"category": "Network", "problem": "WAN outage", "fix": "Check router, ISP link, DNS"}
-]
-
-
-def seed():
+def seed_tickets():
     db = SessionLocal()
-    # insert KB
-    for k in SAMPLE_KB:
-        obj = models.KnowledgeBase(**k)
-        db.add(obj)
-    db.commit()
-    # insert tickets
-    for t in SAMPLE_TICKETS:
-        obj = models.Ticket(title=t["title"], description=t["description"])
-        db.add(obj)
+
+    tickets = [
+        {
+            "title": "VPN not connecting",
+            "description": "Users cannot establish VPN connection from home. Error 809.",
+            "email": "alice@example.com",
+            "status": "Analyzed",
+            "category": "Network",
+            "priority": "High",
+            "suggestion": "Check VPN server, firewall UDP ports, and user VPN profile.",
+            "confidence": 0.92,
+            "close_reason": None,
+            "closed_at": None,
+        },
+        {
+            "title": "Slow database queries",
+            "description": "Reports are taking too long to load.",
+            "email": "bob@example.com",
+            "status": "Analyzed",
+            "category": "Database",
+            "priority": "Medium",
+            "suggestion": "Analyze slow queries, index missing columns, review DB load.",
+            "confidence": 0.88,
+            "close_reason": None,
+            "closed_at": None,
+        },
+        {
+            "title": "Email login failing",
+            "description": "User cannot login with company email credentials.",
+            "email": "carol@example.com",
+            "status": "Closed",
+            "category": "Access",
+            "priority": "Low",
+            "suggestion": "Reset password, verify SSO sync status.",
+            "confidence": 0.77,
+            "close_reason": "User reset password themselves.",
+            "closed_at": datetime.utcnow(),
+        },
+        {
+            "title": "System crashing on startup",
+            "description": "Application crashes immediately on launch.",
+            "email": "dave@example.com",
+            "status": "Analyzed",
+            "category": "Application",
+            "priority": "High",
+            "suggestion": "Reinstall app, clear cache, check logs for corrupt config.",
+            "confidence": 0.84,
+            "close_reason": None,
+            "closed_at": None,
+        },
+        {
+            "title": "Wi-Fi dropping frequently",
+            "description": "Connection drops every few minutes.",
+            "email": "alice@example.com",
+            "status": "Analyzed",
+            "category": "Network",
+            "priority": "Medium",
+            "suggestion": "Update Wi-Fi drivers, restart router, monitor connectivity logs.",
+            "confidence": 0.81,
+            "close_reason": None,
+            "closed_at": None,
+        },
+        {
+            "title": "Printer not responding",
+            "description": "Unable to print anything.",
+            "email": "eve@example.com",
+            "status": "Closed",
+            "category": "Hardware",
+            "priority": "Low",
+            "suggestion": "Restart printer, reinstall drivers, check network mapping.",
+            "confidence": 0.73,
+            "close_reason": "User changed to a different printer.",
+            "closed_at": datetime.utcnow(),
+        },
+        {
+            "title": "Outlook keeps freezing",
+            "description": "Outlook becomes unresponsive frequently.",
+            "email": "bob@example.com",
+            "status": "Analyzed",
+            "category": "Application",
+            "priority": "Medium",
+            "suggestion": "Clear OST file, repair Outlook, update Office packages.",
+            "confidence": 0.79,
+            "close_reason": None,
+            "closed_at": None,
+        },
+        {
+            "title": "New employee access required",
+            "description": "Need email, VPN, and ERP access.",
+            "email": "hr@example.com",
+            "status": "Analyzed",
+            "category": "Access",
+            "priority": "Low",
+            "suggestion": "Provision accounts, assign groups, and enable SSO.",
+            "confidence": 0.90,
+            "close_reason": None,
+            "closed_at": None,
+        },
+        {
+            "title": "Network outage on 3rd floor",
+            "description": "All users unable to connect.",
+            "email": "infra@example.com",
+            "status": "Analyzed",
+            "category": "Network",
+            "priority": "High",
+            "suggestion": "Check switch power, VLAN config, and uplink status.",
+            "confidence": 0.94,
+            "close_reason": None,
+            "closed_at": None,
+        },
+        {
+            "title": "Laptop battery draining fast",
+            "description": "Battery lasts only 30 minutes.",
+            "email": "carol@example.com",
+            "status": "Closed",
+            "category": "Hardware",
+            "priority": "Low",
+            "suggestion": "Calibrate battery, update BIOS, check battery health.",
+            "confidence": 0.72,
+            "close_reason": "Replaced the battery.",
+            "closed_at": datetime.utcnow(),
+        },
+        {
+            "title": "ERP transaction failure",
+            "description": "Users getting transaction aborted error.",
+            "email": "finance@example.com",
+            "status": "Analyzed",
+            "category": "Application",
+            "priority": "High",
+            "suggestion": "Check application logs, clear stale sessions, restart module.",
+            "confidence": 0.87,
+            "close_reason": None,
+            "closed_at": None,
+        },
+        {
+            "title": "Access revoked unexpectedly",
+            "description": "User lost access to shared drive.",
+            "email": "eve@example.com",
+            "status": "Analyzed",
+            "category": "Access",
+            "priority": "Medium",
+            "suggestion": "Re-add user to AD group, check permission inheritance.",
+            "confidence": 0.83,
+            "close_reason": None,
+            "closed_at": None,
+        },
+        {
+            "title": "High CPU usage on server",
+            "description": "Server CPU stays above 95%.",
+            "email": "devops@example.com",
+            "status": "Analyzed",
+            "category": "Infrastructure",
+            "priority": "High",
+            "suggestion": "Check running processes, optimize workloads, reboot if needed.",
+            "confidence": 0.89,
+            "close_reason": None,
+            "closed_at": None,
+        },
+        {
+            "title": "Application timeout errors",
+            "description": "Users experiencing long loading times.",
+            "email": "support@example.com",
+            "status": "Analyzed",
+            "category": "Application",
+            "priority": "Medium",
+            "suggestion": "Check API latency, optimize backend calls, scale servers.",
+            "confidence": 0.82,
+            "close_reason": None,
+            "closed_at": None,
+        },
+        {
+            "title": "Password not syncing",
+            "description": "Password change not reflecting across systems.",
+            "email": "alice@example.com",
+            "status": "Closed",
+            "category": "Access",
+            "priority": "Low",
+            "suggestion": "Force AD sync, clear tokens, retry login after 15 minutes.",
+            "confidence": 0.75,
+            "close_reason": "Password sync completed automatically.",
+            "closed_at": datetime.utcnow(),
+        },
+    ]
+
+    for t in tickets:
+        db_obj = models.Ticket(
+            title=t["title"],
+            description=t["description"],
+            email=t["email"],
+            status=t["status"],
+            category=t["category"],
+            priority=t["priority"],
+            suggestion=t["suggestion"],
+            confidence=t["confidence"],
+            close_reason=t["close_reason"],
+            closed_at=t["closed_at"],
+        )
+        db.add(db_obj)
+
     db.commit()
     db.close()
 
+    print("Seed data inserted successfully!")
+
+
 if __name__ == "__main__":
-    seed()
-    print("Seeded DB with sample tickets and KB entries")
+    seed_tickets()
